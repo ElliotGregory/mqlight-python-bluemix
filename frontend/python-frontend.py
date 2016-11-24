@@ -28,14 +28,16 @@ if os.environ.get('VCAP_SERVICES'):
     for vcap_service in vcap_services:
         if vcap_service.startswith(MQLIGHT_SERVICE_NAME):
             mqlight_service = vcap_services[vcap_service][0]
-            service = str(mqlight_service['credentials']['nonTLSConnectionLookupURI'])
+            service = str(mqlight_service['credentials']
+                                         ['nonTLSConnectionLookupURI'])
             security_options = {
                 'user': str(mqlight_service['credentials']['username']),
                 'password': str(mqlight_service['credentials']['password'])
             }
         elif vcap_service.startswith(MESSAGEHUB_SERVICE_NAME):
             messagehub_service = vcap_services[vcap_service][0]
-            service = str(messagehub_service['credentials']['mqlight_lookup_url'])
+            service = str(messagehub_service['credentials']
+                                            ['mqlight_lookup_url'])
             security_options = {
                 'user': str(messagehub_service['credentials']['user']),
                 'password': str(messagehub_service['credentials']['password'])
@@ -61,7 +63,7 @@ client = mqlight.Client(
     security_options=security_options,
     on_started=subscribe)
 
-def sent(err, topic, data, options):
+def sent(client, err, topic, data, options):
     """
     Message sent callback
     """
@@ -109,7 +111,7 @@ def post_words():
     body = bottle.request.json
 
     # check they've sent { "words" : "some sentence" }
-    if not 'words' in body:
+    if 'words' not in body:
         bottle.response.status = '500 No words'
         return bottle.response
 
